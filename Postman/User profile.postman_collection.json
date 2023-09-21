@@ -1,0 +1,607 @@
+{
+	"info": {
+		"_postman_id": "90fa8e20-ebfe-48eb-bd79-02d9c913dac4",
+		"name": "User profile",
+		"schema": "https://schema.getpostman.com/json/collection/v2.0.0/collection.json",
+		"_exporter_id": "29302588"
+	},
+	"item": [
+		{
+			"name": "Авторизация пользователя",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"var jsonData = pm.response.json();\r",
+							"    pm.collectionVariables.set(\"token\",jsonData.token);\r",
+							"\r",
+							"pm.test(\"Status code is 200\", function () {\r",
+							"    pm.response.to.have.status(200);\r",
+							"});\r",
+							"\r",
+							"var jsonData = pm.response.json();\r",
+							"    pm.environment.set(\"id\",jsonData.id);\r",
+							"\r",
+							"var jsonData = pm.response.json();\r",
+							"    pm.environment.set(\"username\",jsonData.username);"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "formdata",
+					"formdata": [
+						{
+							"key": "username",
+							"value": "ivan_p",
+							"type": "text"
+						},
+						{
+							"key": "password",
+							"value": "a2d7d10172",
+							"type": "text"
+						}
+					]
+				},
+				"url": "https://test-stand.gb.ru/gateway/login"
+			},
+			"response": []
+		},
+		{
+			"name": "Get profile",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Status code is 200\", function () {\r",
+							"    pm.response.to.have.status(200);\r",
+							"});"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"protocolProfileBehavior": {
+				"disableBodyPruning": true
+			},
+			"request": {
+				"method": "GET",
+				"header": [
+					{
+						"key": "X-Auth-Token",
+						"value": "{{token}}",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "formdata",
+					"formdata": []
+				},
+				"url": "https://test-stand.gb.ru/api/users/profile/{{id}}"
+			},
+			"response": []
+		},
+		{
+			"name": "Get profile with another token",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Тест на запрос юзера с чужим токеном\", function () {\r",
+							"    pm.response.to.have.status(400);\r",
+							"    pm.response.to.have.jsonBody({\r",
+							"        error: \"critical\",\r",
+							"        code: 400,\r",
+							"        message: \"Вы запрашиваете чужого пользователя.\"\r",
+							"    });\r",
+							"});"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"protocolProfileBehavior": {
+				"disableBodyPruning": true
+			},
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": {
+						"token": "7ee1228a8c4a399078d37256cf9f6aba"
+					}
+				},
+				"method": "GET",
+				"header": [
+					{
+						"key": "X-Auth-Token",
+						"value": "{{token}}",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "formdata",
+					"formdata": []
+				},
+				"url": "https://test-stand.gb.ru/api/users/profile/{{id}}"
+			},
+			"response": []
+		},
+		{
+			"name": "Update Profile",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Status code is 200\", function () {\r",
+							"    pm.response.to.have.status(200);\r",
+							"});"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": {
+						"token": "7ee1228a8c4a399078d37256cf9f6aba"
+					}
+				},
+				"method": "PUT",
+				"header": [
+					{
+						"key": "X-Auth-Token",
+						"value": "{{token}}",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "formdata",
+					"formdata": [
+						{
+							"key": "image",
+							"type": "file",
+							"src": "ии/flowers-4841591_640.jpg"
+						},
+						{
+							"key": "firstName",
+							"value": "Иван",
+							"type": "text"
+						},
+						{
+							"key": "lastName",
+							"value": "Петров",
+							"type": "text"
+						},
+						{
+							"key": "username",
+							"value": "ivan_p",
+							"type": "text"
+						},
+						{
+							"key": "phone",
+							"value": "89789013332",
+							"type": "text"
+						},
+						{
+							"key": "sex",
+							"value": "male",
+							"type": "text"
+						},
+						{
+							"key": "birthDate",
+							"value": "1995-09-12",
+							"type": "text"
+						}
+					]
+				},
+				"url": "https://test-stand.gb.ru/gateway/users/profile/{{id}}"
+			},
+			"response": []
+		},
+		{
+			"name": "Update with blank username",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Неуспешная попытка создания аккаунта\", function () {\r",
+							"    pm.response.to.have.status(400);\r",
+							"    pm.response.to.have.jsonBody({\r",
+							"            \"message\": \"Не заполнено одно из обязательных полей\",\r",
+							"            \"path\": \"username\",\r",
+							"            \"code\": \"1\"\r",
+							"        });\r",
+							"});"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "PUT",
+				"header": [
+					{
+						"key": "X-Auth-Token",
+						"value": "{{token}}",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "formdata",
+					"formdata": [
+						{
+							"key": "image",
+							"type": "file",
+							"src": "ии/ikasin_lizardfolk_male_60a76f95-60fb-4f44-8f32-a542b6c6734c (1).png"
+						},
+						{
+							"key": "firstName",
+							"value": "Иван",
+							"type": "text"
+						},
+						{
+							"key": "lastName",
+							"value": "Петров",
+							"type": "text"
+						},
+						{
+							"key": "username",
+							"value": "",
+							"type": "text"
+						},
+						{
+							"key": "phone",
+							"value": "89789013332",
+							"type": "text"
+						},
+						{
+							"key": "sex",
+							"value": "male",
+							"type": "text"
+						},
+						{
+							"key": "birthDate",
+							"value": "1995-09-12",
+							"type": "text"
+						}
+					]
+				},
+				"url": "https://test-stand.gb.ru/gateway/users/profile/{{id}}"
+			},
+			"response": []
+		},
+		{
+			"name": "Update with blank lastName",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Неуспешная попытка создания аккаунта\", function () {\r",
+							"    pm.response.to.have.status(400);\r",
+							"    pm.response.to.have.jsonBody({\r",
+							"            \"message\": \"Не заполнено одно из обязательных полей\",\r",
+							"            \"path\": \"username\",\r",
+							"            \"code\": \"1\"\r",
+							"        });\r",
+							"});"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "PUT",
+				"header": [
+					{
+						"key": "X-Auth-Token",
+						"value": "{{token}}",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "formdata",
+					"formdata": [
+						{
+							"key": "image",
+							"type": "file",
+							"src": "ии/ikasin_lizardfolk_male_60a76f95-60fb-4f44-8f32-a542b6c6734c (1).png"
+						},
+						{
+							"key": "firstName",
+							"value": "Иван",
+							"type": "text"
+						},
+						{
+							"key": "lastName",
+							"value": "",
+							"type": "text"
+						},
+						{
+							"key": "username",
+							"value": "ivan_p",
+							"type": "text"
+						},
+						{
+							"key": "phone",
+							"value": "89789013332",
+							"type": "text"
+						},
+						{
+							"key": "sex",
+							"value": "male",
+							"type": "text"
+						},
+						{
+							"key": "birthDate",
+							"value": "1995-09-12",
+							"type": "text"
+						}
+					]
+				},
+				"url": "https://test-stand.gb.ru/gateway/users/profile/{{id}}"
+			},
+			"response": []
+		},
+		{
+			"name": "Update with blank image",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Неуспешная попытка создания аккаунта\", function () {\r",
+							"    pm.response.to.have.status(400);\r",
+							"    pm.response.to.have.jsonBody({\r",
+							"            \"message\": \"Не заполнено одно из обязательных полей\",\r",
+							"            \"path\": \"username\",\r",
+							"            \"code\": \"1\"\r",
+							"        });\r",
+							"});"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "PUT",
+				"header": [
+					{
+						"key": "X-Auth-Token",
+						"value": "{{token}}",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "formdata",
+					"formdata": [
+						{
+							"key": "image",
+							"type": "file",
+							"src": []
+						},
+						{
+							"key": "firstName",
+							"value": "Иван",
+							"type": "text"
+						},
+						{
+							"key": "lastName",
+							"value": "Петров",
+							"type": "text"
+						},
+						{
+							"key": "username",
+							"value": "ivan_p",
+							"type": "text"
+						},
+						{
+							"key": "phone",
+							"value": "89789013332",
+							"type": "text"
+						},
+						{
+							"key": "sex",
+							"value": "male",
+							"type": "text"
+						},
+						{
+							"key": "birthDate",
+							"value": "1995-09-12",
+							"type": "text"
+						}
+					]
+				},
+				"url": "https://test-stand.gb.ru/gateway/users/profile/{{id}}"
+			},
+			"response": []
+		},
+		{
+			"name": "Update with non-unique login",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Неуспешная попытка создания аккаунта\", function () {\r",
+							"    pm.response.to.have.status(400);\r",
+							"    pm.response.to.have.jsonBody({\r",
+							"            \"message\": \"Не уникальный логин\",\r",
+							"            \"path\": \"username\",\r",
+							"            \"code\": \"2\"\r",
+							"        });\r",
+							"});"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "PUT",
+				"header": [
+					{
+						"key": "X-Auth-Token",
+						"value": "{{token}}",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "formdata",
+					"formdata": [
+						{
+							"key": "image",
+							"type": "file",
+							"src": "ии/ikasin_lizardfolk_male_60a76f95-60fb-4f44-8f32-a542b6c6734c (1).png"
+						},
+						{
+							"key": "firstName",
+							"value": "Иван",
+							"type": "text"
+						},
+						{
+							"key": "lastName",
+							"value": "Петров",
+							"type": "text"
+						},
+						{
+							"key": "username",
+							"value": "emily_j",
+							"type": "text"
+						},
+						{
+							"key": "phone",
+							"value": "89789013332",
+							"type": "text"
+						},
+						{
+							"key": "sex",
+							"value": "male",
+							"type": "text"
+						},
+						{
+							"key": "birthDate",
+							"value": "1995-09-12",
+							"type": "text"
+						}
+					]
+				},
+				"url": "https://test-stand.gb.ru/gateway/users/profile/{{id}}"
+			},
+			"response": []
+		},
+		{
+			"name": "Update with empty fields",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Неуспешная попытка создания аккаунта\", function () {\r",
+							"    pm.response.to.have.status(400);\r",
+							"    pm.response.to.have.jsonBody({\r",
+							"            \"message\": \"Не заполнено ни одно поле\",\r",
+							"            \"path\": \"username\",\r",
+							"            \"code\": \"3\"\r",
+							"        });\r",
+							"});"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "PUT",
+				"header": [
+					{
+						"key": "X-Auth-Token",
+						"value": "{{token}}",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "formdata",
+					"formdata": [
+						{
+							"key": "image",
+							"type": "file",
+							"src": []
+						},
+						{
+							"key": "firstName",
+							"value": "",
+							"type": "text"
+						},
+						{
+							"key": "lastName",
+							"value": "",
+							"type": "text"
+						},
+						{
+							"key": "username",
+							"value": "",
+							"type": "text"
+						},
+						{
+							"key": "phone",
+							"value": "",
+							"type": "text"
+						},
+						{
+							"key": "sex",
+							"value": "",
+							"type": "text"
+						},
+						{
+							"key": "birthDate",
+							"value": "",
+							"type": "text"
+						}
+					]
+				},
+				"url": "https://test-stand.gb.ru/gateway/users/profile/{{id}}"
+			},
+			"response": []
+		}
+	],
+	"event": [
+		{
+			"listen": "prerequest",
+			"script": {
+				"type": "text/javascript",
+				"exec": [
+					""
+				]
+			}
+		},
+		{
+			"listen": "test",
+			"script": {
+				"type": "text/javascript",
+				"exec": [
+					""
+				]
+			}
+		}
+	],
+	"variable": [
+		{
+			"key": "token",
+			"value": ""
+		},
+		{
+			"key": "id",
+			"value": "",
+			"type": "string"
+		}
+	]
+}
